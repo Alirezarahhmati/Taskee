@@ -7,6 +7,7 @@ public class App {
     public static void main(String[] args) throws InterruptedException {
 
         Server server = new Server(5000);
+        int i = 1;
 
         while (true) {
             while (atomicInteger.get() >= 16) {
@@ -14,7 +15,11 @@ public class App {
             }
 
             atomicInteger.getAndIncrement();
-            serverJ.run();
+            User user = new User();
+            WorkSpace workSpace = new WorkSpace();
+            server.join();
+            server.start();
+            //server.run();
         }
     }
 

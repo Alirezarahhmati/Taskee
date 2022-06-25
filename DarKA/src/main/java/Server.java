@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,10 +10,12 @@ import java.util.Arrays;
 public class Server extends Thread{
     ServerSocket serverSocket;
     Socket clientSocket;
+    User user;
 
     public Server (int port) {
         try {
             serverSocket = new ServerSocket(port);
+            user = new User();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -35,7 +38,8 @@ public class Server extends Thread{
             String jsonRequest = dataInputStream.readUTF();
             Gson gson = new Gson();
             Request request = gson.fromJson(jsonRequest , Request.class);
-            request.receiveRequest();
+            request.receiveRequest(clientSocket , user);
+
             dataInputStream.close();
             clientSocket.close();
         } catch (IOException e) {
@@ -45,6 +49,7 @@ public class Server extends Thread{
 
     @Override
     public void run() {
+        System.out.println("i am in thread");
         receiveInformation();
         App.decreaseConcurrencyLevel();
     }
