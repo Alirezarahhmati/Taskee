@@ -7,9 +7,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 
-public class Server extends Thread{
+public class Server implements Runnable{
     ServerSocket serverSocket;
     Socket clientSocket;
+    DataInputStream dataInputStream;
     User user;
 
     public Server (int port) {
@@ -21,36 +22,44 @@ public class Server extends Thread{
         }
     }
 
-    public void clientAccept () {
-        try {
-            clientSocket = serverSocket.accept();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     /// this function receive a code request and do what must do
     public void receiveInformation () {
-        try {
-            clientSocket = serverSocket.accept();
-            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());
-            ///   read request code for know which request sent from client
-            String jsonRequest = dataInputStream.readUTF();
-            Gson gson = new Gson();
-            Request request = gson.fromJson(jsonRequest , Request.class);
-            request.receiveRequest(clientSocket , user);
+        // save information
+        User user = new User();
+        WorkSpace workSpace = new WorkSpace();
+        Board board = new Board();
+        //
+        while (true) {
+            try {
+                clientSocket = serverSocket.accept();
+                dataInputStream = new DataInputStream(clientSocket.getInputStream());
+                ///   read request code for know which request sent from client
+                String jsonRequest = dataInputStream.readUTF();
+                Gson gson = new Gson();
+                Request request = gson.fromJson(jsonRequest, Request.class);
 
+                if (!request.receiveRequest(clientSocket, user, workSpace ,board)){
+                    break;
+                }
+
+            } catch (IOException e) {
+                System.out.println(Arrays.toString(e.getStackTrace()));
+            }
+        }
+
+        try {
             dataInputStream.close();
             clientSocket.close();
         } catch (IOException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
         }
     }
 
     @Override
     public void run() {
-        System.out.println("i am in thread");
+        System.out.println("start");
         receiveInformation();
         App.decreaseConcurrencyLevel();
+        System.out.println("end");
     }
 }

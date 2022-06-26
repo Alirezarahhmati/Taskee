@@ -10,38 +10,53 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class WorkSpace {
+    private int workspace_id;
     private String name;
-    private Connection connection;
+    private boolean status;
+    private final Connection connection;
 
     public WorkSpace () {
         MyConnection myConnection = new MyConnection();
         connection = myConnection.connection();
     }
 
-    public void createWorkSpace (Socket socket) {
+    public void createWorkSpace (Socket socket , User user) {
         getWorkSpaceInformation(socket);
 
         int max_id = 0;
-        String query = "SELECT id FROM WorkSpace";
+        String query = "SELECT max(id) FROM WorkSpace";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-                int x = resultSet.getInt(1);
-                if (x > max_id) {
-                    max_id = x;
-                }
+            max_id = resultSet.getInt(1);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        workspace_id = max_id + 1;
+
+        query = "INSERT INTO WorkSpace (id , name , status) VALUES (? ,? , ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1 , workspace_id);
+            preparedStatement.setString(2 , name);
+            if (status) {
+                preparedStatement.setInt(3, 1);
+            } else {
+                preparedStatement.setInt(3 , 0);
             }
+
+            preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        query = "INSERT INTO WorkSpace (id , name) VALUES (? ,?)";
+        query = "INSERT INTO WorkSpaceMembers (email , workspace_id , role) VALUES (? , ? , ?)";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1 , max_id + 1);
-            preparedStatement.setString(2 , name);
+            preparedStatement.setInt(1 , workspace_id);
+            preparedStatement.setString(2 , user.getEmail());
+            preparedStatement.setInt(3 , 1);
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
@@ -49,48 +64,76 @@ public class WorkSpace {
         }
     }
 
-    public void getWorkSpaceInformation (Socket socket) {
+    private void getWorkSpaceInformation (Socket socket) {
         try {
             DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
             String json = dataInputStream.readUTF();
             Gson gson = new Gson();
             name = gson.fromJson(json , String.class);
+
+            json = dataInputStream.readUTF();
+            String s = gson.fromJson(json , String.class);
+            status = !s.equals("0");
+
             dataInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void main(String[] args) throws SQLException {
-
-
-        // we handle multiThread in this section
+    public void logIntoWorkspace (Socket socket) {
+        String id = "";
         try {
-            Socket socket = new Socket("127.0.0.1" , 5000);
-            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            Request request = new Request("2");
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            String json = dataInputStream.readUTF();
+
             Gson gson = new Gson();
-            String jsonRequest = gson.toJson(request);
-            dataOutputStream.writeUTF(jsonRequest);
+            id = gson.fromJson(json , String.class);
 
-            String email = "mimimimi@gmail.com";
-            String password = "85858585";
-
-            Thread.sleep(5000000);
-
-            jsonRequest = gson.toJson(email);
-            dataOutputStream.writeUTF(jsonRequest);
-
-            jsonRequest = gson.toJson(password);
-            dataOutputStream.writeUTF(jsonRequest);
-
-            dataOutputStream.flush();
-            socket.close();
+            dataInputStream.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
+        this.workspace_id = Integer.parseInt(id);
+
+        String query = "SELECT name , id FROM Board WHERE workspace_id = (?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1 , workspace_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            String json;
+            Gson gson = new Gson();
+            while (resultSet.next()) {
+                String name = resultSet.getString(1);
+                gson = new Gson();
+                json = gson.toJson(name);
+                dataOutputStream.writeUTF(json);
+
+                int boardId = resultSet.getInt(2);
+                json = gson.toJson(boardId);
+                dataOutputStream.writeUTF(json);
+            }
+
+            json = gson.toJson("end");
+            dataOutputStream.writeUTF(json);
+
+            dataOutputStream.close();
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    /// setter and getter
+    public int getWorkspace_id() {
+        return workspace_id;
+    }
+
+    public void setWorkspace_id(int workspace_id) {
+        this.workspace_id = workspace_id;
     }
 }

@@ -12,7 +12,8 @@ public class Request {
         this.requestCode = requestCode;
     }
 
-    public void receiveRequest (Socket socket , User user) {
+    public boolean receiveRequest(Socket socket, User user, WorkSpace workSpace , Board board) {
+        System.out.println("receive request");
         switch (requestCode) {
             case "1" :
                 User newUser = new User();
@@ -21,15 +22,29 @@ public class Request {
                 }else {
                     //sendUnSuccessfulRequest(socket);
                 }
-                break;
-            case "2" :
+                return true;
+                case "2" :
                 if (user.login(socket)) {
                     //sendSuccessfulRequest(socket);
                 }else {
                     //sendUnSuccessfulRequest(socket);
                 }
-                break;
+                return true;
+            case "51" :
+                workSpace.createWorkSpace(socket , user);
+                return true;
+            case "101" :
+                if (board.canMakeBoard(user)) {
+                    sendSuccessfulRequest(socket);
+                } else {
+                    sendUnSuccessfulRequest(socket);
+                }
+                return true;
+            case "102" :
+                board.createBoard(socket);
+                return true;
         }
+        return false;
     }
 
     public void sendSuccessfulRequest (Socket socket) {

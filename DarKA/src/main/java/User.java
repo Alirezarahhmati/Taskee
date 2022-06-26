@@ -12,7 +12,7 @@ public class User {
 
     private  String email;
     private  String password;
-    private Connection connection;
+    private final Connection connection;
 
     public User() {
         MyConnection myConnection = new MyConnection();
@@ -26,11 +26,12 @@ public class User {
             return false;
         }
 
-        String query = "INSERT INTO users (email , password) VALUES (? , ?)";
+        String query = "INSERT INTO users (email , password , profile_picture) VALUES (? , ? , ?)";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, email);
             preparedStatement.setString(2, password);
+            preparedStatement.setString(3 , null);
 
             preparedStatement.executeUpdate();
             return true;

@@ -15,28 +15,24 @@ public class Main {
         try {
             Socket socket = new Socket("127.0.0.1" , 5000);
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-            Request request = new Request("2");
+            Request request = new Request("0");
             Gson gson = new Gson();
             String jsonRequest = gson.toJson(request);
             dataOutputStream.writeUTF(jsonRequest);
 
-            String email = "mimimimi@gmail.com";
-            String password = "85858585";
+            String name = "Taskee";
+            String status = "1";
 
-            Thread.sleep(500000);
-
-            jsonRequest = gson.toJson(email);
+            jsonRequest = gson.toJson(name);
             dataOutputStream.writeUTF(jsonRequest);
 
-            jsonRequest = gson.toJson(password);
+            jsonRequest = gson.toJson(status);
             dataOutputStream.writeUTF(jsonRequest);
 
             dataOutputStream.flush();
             socket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
     }
