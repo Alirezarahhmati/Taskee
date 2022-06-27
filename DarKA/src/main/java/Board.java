@@ -18,23 +18,6 @@ public class Board extends WorkSpace{
         connection = myConnection.connection();
     }
 
-    public boolean canMakeBoard (User user) {
-        String query = "SELECT role FROM WorkSpaceMembers WHERE email = (?)";
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1 , user.getEmail());
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            String role = resultSet.getString(1);
-            if (role.equals("3")) {
-                return false;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return true;
-    }
-
     public void createBoard (Socket socket) {
         getBoardInformation(socket);
 
@@ -83,6 +66,92 @@ public class Board extends WorkSpace{
             String id = gson.fromJson(json , String.class);
             board_id = Integer.parseInt(id);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addMember (Socket socket) {
+        //receive the email of member
+        String email = "";
+        try {
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            String json = dataInputStream.readUTF();
+            Gson gson = new Gson();
+            email = gson.fromJson(json , String.class);
+            dataInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // check if there is a member with received email in workspace
+        boolean isInWorkspace = false;
+        String query = "SELECT email FROM WorkSpaceMembers WHERE workspace_id = (?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1 , getWorkspace_id());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                if (email.equals(resultSet.getString(1))) {
+                    isInWorkspace = true;
+                    break;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (!isInWorkspace) {
+            return;
+        }
+
+        // check if there is a member with received email
+        query = "SELECT email FROM BoardMember WHERE board_id = (?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1 , board_id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                if (email.equals(resultSet.getString(1))) {
+                    return;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // insert new member
+        query = "INSERT INTO BoardMember (email , board_id) VALUES (? , ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1 , email);
+            preparedStatement.setInt(2 , board_id);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeMember (Socket socket) {
+        String email = "";
+        try {
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            String json = dataInputStream.readUTF();
+            Gson gson = new Gson();
+            email = gson.fromJson(json , String.class);
+            dataInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String query = "DELETE FROM BoardMember WHERE email = (?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1 , email);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
