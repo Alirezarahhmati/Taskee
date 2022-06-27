@@ -18,23 +18,23 @@ public class Request {
             case "1" :
                 User newUser = new User();
                 if (newUser.addUser(socket)) {
-                    //sendSuccessfulRequest(socket);
+                    sendSuccessfulRequest(socket);
                 }else {
-                    //sendUnSuccessfulRequest(socket);
+                    sendUnSuccessfulRequest(socket);
                 }
                 return true;
                 case "2" :
                 if (user.login(socket)) {
-                    //sendSuccessfulRequest(socket);
+                    sendSuccessfulRequest(socket);
                 }else {
-                    //sendUnSuccessfulRequest(socket);
+                    sendUnSuccessfulRequest(socket);
                 }
                 return true;
             case "51" :
                 workSpace.createWorkSpace(socket , user);
                 return true;
             case "101" :
-                if (board.canMakeBoard(user)) {
+                if (workSpace.isAllowChange(user)) {
                     sendSuccessfulRequest(socket);
                 } else {
                     sendUnSuccessfulRequest(socket);
@@ -76,9 +76,9 @@ public class Request {
     }
 
     // send changed information to client and update it
-    public void refreshRequest () {
+    //public void refreshRequest () {
 
-    }
+    //}
 
 
 }

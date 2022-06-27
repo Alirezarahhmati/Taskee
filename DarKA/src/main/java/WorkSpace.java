@@ -253,9 +253,7 @@ public class WorkSpace {
 
             dataOutputStream.close();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }

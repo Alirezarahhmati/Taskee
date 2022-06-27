@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.sql.Connection;
@@ -154,5 +155,37 @@ public class Board extends WorkSpace{
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void workspacesBoards (Socket socket) {
+        DataOutputStream dataOutputStream = null;
+        String json;
+        Gson gson = new Gson();
+        String query = "SELECT name , id FROM Board WHERE workspace_id = (?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1 , getWorkspace_id());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            dataOutputStream = new DataOutputStream(socket.getOutputStream());
+            while (resultSet.next()) {
+                String name = resultSet.getString(1);
+                json = gson.toJson(name);
+                dataOutputStream.writeUTF(json);
+
+                int id = resultSet.getInt(2);
+                json = gson.toJson(id);
+                dataOutputStream.writeUTF(json);
+            }
+
+            String message = "end";
+            json = gson.toJson(message);
+            dataOutputStream.writeUTF(json);
+
+            dataOutputStream.close();
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
