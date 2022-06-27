@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Locale;
 
 public class Card extends Board{
     private int card_id;
@@ -38,7 +37,21 @@ public class Card extends Board{
         }
         card_id = max_id + 1;
 
+        query = "INSERT INTO Card (id , created_by , title , description , date , time , board_id) VALUES (? , ? , ? , ? , ? , ? , ?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1 , card_id);
+            preparedStatement.setString(2 , user.getEmail());
+            preparedStatement.setString(3 , title);
+            preparedStatement.setString(4 , description);
+            preparedStatement.setString(5 , date);
+            preparedStatement.setString(6 , time);
+            preparedStatement.setInt(7 ,getBoard_id());
 
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -62,6 +75,54 @@ public class Card extends Board{
             json = dataInputStream.readUTF();
             time = gson.fromJson(json , String.class);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void addMember (Socket socket) {
+        String email = "";
+        try {
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            Gson gson = new Gson();
+            String json = dataInputStream.readUTF();
+            email = gson.fromJson(json , String.class);
+            dataInputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String query = "INSERT INTO cardMember (card_id , email) VALUES (?,?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1 , card_id );
+            preparedStatement.setString(2 , email);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteCard (Socket socket) {
+        int id = 0;
+        try {
+            DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+            Gson gson = new Gson();
+            String json = dataInputStream.readUTF();
+            String x = gson.fromJson(json , String.class);
+
+            id = Integer.parseInt(x);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String query = "DELETE FROM Card WHERE id = (?)";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1 , id);
+
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

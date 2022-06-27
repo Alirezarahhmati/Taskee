@@ -1,10 +1,12 @@
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class App {
 
     private static final AtomicInteger atomicInteger = new AtomicInteger(0);
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
 
         Server server = new Server(5000);
 
