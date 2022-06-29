@@ -11,12 +11,10 @@ public class Server implements Runnable{
     ServerSocket serverSocket;
     Socket clientSocket;
     DataInputStream dataInputStream;
-    User user;
 
     public Server (int port) {
         try {
             serverSocket = new ServerSocket(port);
-            user = new User();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -36,7 +34,9 @@ public class Server implements Runnable{
                 ///   read request code for know which request sent from client
                 String jsonRequest = dataInputStream.readUTF();
                 Gson gson = new Gson();
+                //String requestCod = gson.fromJson(jsonRequest , String.class);
                 Request request = gson.fromJson(jsonRequest, Request.class);
+//                Request request = new Request(requestCod);
 
                 if (!request.receiveRequest(clientSocket, user, workSpace ,board)){
                     break;

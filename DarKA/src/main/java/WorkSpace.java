@@ -240,10 +240,10 @@ public class WorkSpace {
                 String name = resultSet.getString(1);
 
                 Gson gson = new Gson();
-                String json = gson.toJson(name);
+                String json = gson.toJson(workspaceId);
                 dataOutputStream.writeUTF(json);
 
-                json = gson.toJson(workspaceId);
+                json = gson.toJson(name);
                 dataOutputStream.writeUTF(json);
             }
 

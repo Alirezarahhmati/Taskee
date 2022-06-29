@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#E2CFEA"
+    android:backgroundTint="#E2CFEA"
+    tools:context=".HomeActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="309dp"
+            android:layout_height="638dp"
+            android:layout_above="@id/liner_buttons"
+            android:layout_below="@id/txt_Toolbar"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="51dp"
+            android:layout_marginTop="1dp"
+            android:layout_marginEnd="51dp"
+            android:layout_marginBottom="-1dp"
+            android:background="#E2CFEA"
+            android:backgroundTint="#E2CFEA"
+            tools:ignore="UnknownId">
+
+            <LinearLayout
+                android:id="@+id/liner_tasks"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/liner_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/WorkspacesButton"
+                android:layout_width="143dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#C77DFF"
+                android:shadowColor="#56CFE1"
+                android:text="Workspaces"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0"
+                app:rippleColor="#56CFE1"
+                app:strokeColor="#56CFE1" />
+
+            <Button
+                android:id="@+id/ProfileButton"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#C77DFF"
+                android:shadowColor="#F8F8F8"
+                android:text="Profile"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <Button
+                android:id="@+id/homeButton"
+                android:layout_width="145dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#C77DFF"
+                android:text="Home"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_Toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:background="#9AA8E6"
+            android:gravity="center"
+            android:text="Workspaces and Boards"
+            android:textAlignment="center"
+            android:textColor="#FFFFFF"
+            android:textFontWeight="400"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+
+    </RelativeLayout>
+
+
+</RelativeLayout>

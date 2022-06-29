@@ -19,7 +19,7 @@ public class User {
         connection = myConnection.connection();
     }
 
-    public boolean addUser (Socket socket) {
+    public boolean addUser (Socket socket , User user) {
         getUserInformation(socket);
 
         if (!isEmailUnique()) {
@@ -76,7 +76,7 @@ public class User {
             json = dataInputStream.readUTF();
             password = gson.fromJson(json , String.class);
 
-            dataInputStream.close();
+            //dataInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

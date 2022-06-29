@@ -17,7 +17,7 @@ public class Request {
         switch (requestCode) {
             case "1" :
                 User newUser = new User();
-                if (newUser.addUser(socket)) {
+                if (user.addUser(socket , user)) {
                     sendSuccessfulRequest(socket);
                 }else {
                     sendUnSuccessfulRequest(socket);
@@ -33,6 +33,8 @@ public class Request {
             case "51" :
                 workSpace.createWorkSpace(socket , user);
                 return true;
+            case "52" :
+                workSpace.usersWorkSpaces(socket , user);
             case "101" :
                 if (workSpace.isAllowChange(user)) {
                     sendSuccessfulRequest(socket);
@@ -51,6 +53,7 @@ public class Request {
         try {
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             Request request = new Request("300");
+            //String request = "300";
             Gson gson = new Gson();
             String jsonRequest = gson.toJson(request);
             dataOutputStream.writeUTF(jsonRequest);
@@ -65,6 +68,7 @@ public class Request {
         try {
             DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
             Request request = new Request("301");
+            //String request = "301";
             Gson gson = new Gson();
             String jsonRequest = gson.toJson(request);
             dataOutputStream.writeUTF(jsonRequest);
@@ -73,6 +77,10 @@ public class Request {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getRequestCode() {
+        return requestCode;
     }
 
     // send changed information to client and update it
