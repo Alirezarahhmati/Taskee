@@ -9,7 +9,7 @@ task tracking.
 
 Creating new workspace for your project and add member to you workspace.
 Add some list to your workspace and create some Todo and Doing and Don cards to give
-your list member some responsibility.You can attach photo and leave comment in card.
+your list's member some responsibility.You can attach photo and leave comment in card.
 
 ### **How Use**
 After cloning project we have some files. In the Taskee2 file are android classes and
